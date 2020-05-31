@@ -3,13 +3,6 @@
 # vim: tabstop=4:softtabstop=4:shiftwidth=4:expandtab
 
 """
-anisotropy.py
-
-Requirements:
-- numpy:        pip install numpy
-- matplotlib:   macports, apt-get
-- libstempo:    pip install libstempo (optional, required for creating HDF5
-                files, and for non-linear timing model analysis
 
 Created by vhaasteren on 2013-08-06.
 Copyright (c) 2013 Rutger van Haasteren
@@ -21,59 +14,13 @@ from __future__ import division
 import numpy as np
 import math
 import scipy.linalg as sl, scipy.special as ss
-import matplotlib.pyplot as plt
 import os, glob
 import sys
 import json
-import tempfile
 import healpy as hp
-import libstempo as lt
-import corner, acor
 
-import sYlm as shar
-
-
-# Some constants used in Piccard
-# For DM calculations, use this constant
-# See You et al. (2007) - http://arxiv.org/abs/astro-ph/0702366
-# Lee et al. (in prep.) - ...
-# Units here are such that delay = DMk * DM * freq^-2 with freq in MHz
-pic_DMk = 4.15e3        # Units MHz^2 cm^3 pc sec
-
-pic_spd = 86400.0       # Seconds per day
-pic_spy =  31557600.0   # Seconds per year (yr = 365.25 days, so Julian years)
-pic_T0 = 53000.0        # MJD to which all HDF5 toas are referenced
-pic_pc = 3.08567758e16  # Parsec in meters
 pic_c = 299792458     # Speed of light in m/s
 
-
-
-def nClm_sw_lmax(lmax):
-    """
-    Given an lmax, return the number of clm_g (or clm_c) modes
-    """
-    return (lmax+1)**2-4
-
-def lmax_nClm_sw(nClm_sw):
-    """
-    Given a number of nClm_sw, return the maximum number of ell
-    """
-    return int(np.sqrt(nClm_sw+4))-1
-
-def sYlm_SignalResponse(lmax, nside, curl=False):
-    """
-    Given a maximum harmonic resolution (lmax), and a maximum
-    pixel resolution, calculate the Signal response matrix and
-    the mapping matrix. (This is from alm to pixels...)
-    
-    @param lmax:    Mapping resolution
-    @param nside:   Pixel resolution
-    
-    @return V, Vg
-    """
-    mW, mX = polMappingMatrices(nside, lmax)
-    
-    return WX_SignalResponse(mW, mX, curl)
 
 def R_SignalResponse(ptapsrs, lmax):
     """
@@ -101,6 +48,7 @@ def R_SignalResponse(ptapsrs, lmax):
                 alm_ind += 1
     return R
 
+
 def R_SignalResponse_earth(ptapsrs, lmax):
     """
     Given a maximum harmonic resolution (lmax), calculate
@@ -127,6 +75,7 @@ def R_SignalResponse_earth(ptapsrs, lmax):
                 alm_ind += 1
     return R
 
+
 def R_SignalResponse_pulsar(ptapsrs, lmax):
     """Since we cannot do the pulsar term properly, we will just add random
     phases"""
@@ -143,6 +92,7 @@ def signalResponse(ptapsrs, gwtheta, gwphi, freq=1.0e-9, dirconv=True):
     F_p = signalResponse_pulsar(ptapsrs, gwtheta, gwphi, freq=freq, dirconv=dirconv)
     return F_e + F_p
 
+
 def signalResponse_earth(ptapsrs, gwtheta, gwphi, freq=1.0e-9, dirconv=True):
     """
     Create the signal response matrix
@@ -156,6 +106,7 @@ def signalResponse_earth(ptapsrs, gwtheta, gwphi, freq=1.0e-9, dirconv=True):
     return signalResponse_fast(psrpos_theta, psrpos_phi, gwtheta, gwphi,
             freq, psrdist, dirconv)
 
+
 def signalResponse_pulsar(ptapsrs, gwtheta, gwphi, freq=1.0e-9, dirconv=True):
     """
     Create the signal response matrix
@@ -168,6 +119,7 @@ def signalResponse_pulsar(ptapsrs, gwtheta, gwphi, freq=1.0e-9, dirconv=True):
 
     return signalResponse_fast(psrpos_theta, psrpos_phi, gwtheta, gwphi,
             freq, psrdist, dirconv)
+
 
 def signalResponse_fast(ptheta_a, pphi_a, gwtheta_a, gwphi_a, freq,
         psrdist, dirconv=True):
@@ -207,6 +159,7 @@ def createSignalResponse(pphi, ptheta, gwphi, gwtheta, freq, psrdist, dirconv=Tr
     F[:, 1::2] = Fc
 
     return F
+
 
 def createSignalResponse_pol(pphi, ptheta, gwphi, gwtheta, freq, psrdist, plus=True, norm=True,
         dirconv=True):
@@ -312,6 +265,7 @@ def fplus_fcross(psr, gwtheta, gwphi):
 
     return fplus, fcross
 
+
 def almFromClm(clm):
     """
     Given an array of clm values, return an array of complex alm valuex
@@ -380,7 +334,6 @@ def clmFromAlm(alm):
     return clm
 
 
-
 def mapFromClm_fast(clm, nside):
     """
     Given an array of C_{lm} values, produce a pixel-power-map (non-Nested) for
@@ -399,6 +352,7 @@ def mapFromClm_fast(clm, nside):
     h = hp.alm2map(alm, nside, maxl, verbose=False)
 
     return h
+
 
 def mapFromClm(clm, nside):
     """
@@ -462,7 +416,8 @@ def clmFromMap(h, lmax):
     ind = 0
     for ll in range(lmax+1):
         for mm in range(-ll, ll+1):
-            clm[ind] += np.sum(h * shar.real_sph_harm(mm, ll, pixels[1], pixels[0]))
+            clm[ind] += np.sum(h * shar.real_sph_harm(mm, ll, 
+                                                    pixels[1], pixels[0]))
             ind += 1
             
     return clm * 4 * np.pi / npixels
@@ -527,6 +482,7 @@ def SH_CorrBasis(psr_locs, lmax, nside=32):
 
     return basis
 
+
 def c_orf_Ylm(pars, ptapsrs, corrbasis):
     """Get c_orf from the parameters for Ylm model
     
@@ -549,6 +505,7 @@ def c_orf_Ylm(pars, ptapsrs, corrbasis):
         c_orf += Plm[ii] * corrbasis[ii]
 
     return c_orf
+
 
 def c_orf_sqrtYlm(pars, ptapsrs, Fe):
     """Get c_orf from the parameters for sqrtYlm model
@@ -582,62 +539,6 @@ def c_orf_sqrtYlm(pars, ptapsrs, Fe):
 
     return orfFromMap_fast(usermap=hpwr, response=Fe.real)
 
-def c_orf_sqrtYlm_sign(pars, ptapsrs, Fe):
-    """Get c_orf from the parameters for sqrtYlm model
-
-    ####
-    :param Plm:         Anisotropy power parametes P_{lm}
-    :param pars:        Anisotropy parameterization
-    :param ptapsrs:     List of pulsar objects
-    :param Fe:          The pixel-basis signal response for the Earth term 
-    
-    """
-    npsrs = len(ptapsrs)
-    nobs = len(ptapsrs[0].residuals)
-    nPlm = int((len(pars)+1)/2) # add 1 to pars since sign of 00 fixed
-    npix = int(0.5*Fe.shape[1])
-    nside = hp.npix2nside(npix)
-    
-    lmax = int(np.sqrt(nPlm))-1
-    
-    if not (lmax+1)**2 == nPlm:
-        raise ValueError("Number of Plm not a full square")
-
-    # Square root of power, since we square it later
-    newpars = pars[:nPlm]
-    signs = np.sign( np.append(1.0,pars[nPlm:]) )
-    
-    hpwr = mapFromClm_fast(10**newpars * signs, nside)**2
-   
-    return orfFromMap_fast(usermap=hpwr, response=Fe.real)
-
-def c_orf_logYlm(pars, ptapsrs, Fe):
-    """Get c_orf from the parameters for logYlm model
-
-    ####
-    :param Plm:         Anisotropy power parametes P_{lm}
-    :param pars:        Anisotropy parameterization
-    :param ptapsrs:     List of pulsar objects
-    :param Fe:          The pixel-basis signal response for the Earth term 
-    
-    """
-    npsrs = len(ptapsrs)
-    nobs = len(ptapsrs[0].residuals)
-    nPlm = int(len(pars)) 
-    npix = int(0.5*Fe.shape[1])
-    nside = hp.npix2nside(npix)
-    
-    lmax = int(np.sqrt(nPlm))-1
-    
-    if not (lmax+1)**2 == nPlm:
-        raise ValueError("Number of Plm not a full square")
-
-    # Square root of power, since we square it later
-    newpars = np.copy(pars)
-    
-    hpwr = 10.0**mapFromClm_fast(2.0 * newpars, nside)
-   
-    return orfFromMap_fast(usermap=hpwr, response=Fe.real)
 
 def c_orf_queryDisk(pars, ptapsrs, Fe, ndisks, isocorrbasis):
     """Get c_orf from the parameters for queryDisk model
@@ -660,6 +561,7 @@ def c_orf_queryDisk(pars, ptapsrs, Fe, ndisks, isocorrbasis):
         orf_tot += orfFromMap_fast(usermap=m, response=Fe.real)
 
     return orf_tot
+
 
 def c_orf_pointSrc(pars, ptapsrs, Fe, npoints, isocorrbasis):
     """
