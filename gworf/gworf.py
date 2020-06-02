@@ -24,11 +24,11 @@ class psr(object):
     Lightweight class to hold pulsar meta-data.
     """
 
-    def __init__(self, raj, decj, pdist):
+    def __init__(self, raj, decj, dist):
 
         self.raj = raj
         self.decj = decj
-        self.pdist = pdist
+        self.dist = dist
 
 
 def R_SignalResponse(ptapsrs, lmax):
