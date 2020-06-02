@@ -4,8 +4,9 @@
 
 """
 
-Created by vhaasteren on 2013-08-06.
-Copyright (c) 2013 Rutger van Haasteren
+GWORF.py -- (G)ravitational (W)ave (O)verlap (R)eduction (F)unctions
+
+Copyright (c) 2020 Stephen R. Taylor & Rutger van Haasteren
 
 """
 
@@ -20,6 +21,15 @@ import json
 import healpy as hp
 
 pic_c = 299792458     # Speed of light in m/s
+
+class psr(object):
+    """Lightweight class to hold pulsar meta-data"""
+
+    def __init__(self, raj, decj, pdist):
+
+        self.raj = raj
+        self.decj = decj
+        self.pdist = pdist
 
 
 def R_SignalResponse(ptapsrs, lmax):
