@@ -13,17 +13,16 @@ Copyright (c) 2020 Stephen R. Taylor & Rutger van Haasteren
 from __future__ import division
 
 import numpy as np
-import math
 import scipy.linalg as sl, scipy.special as ss
-import os, glob
-import sys
-import json
+import os, glob, sys, json
 import healpy as hp
 
 pic_c = 299792458     # Speed of light in m/s
 
 class psr(object):
-    """Lightweight class to hold pulsar meta-data"""
+    """
+    Lightweight class to hold pulsar meta-data.
+    """
 
     def __init__(self, raj, decj, pdist):
 
