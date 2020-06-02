@@ -18,6 +18,7 @@ import os, glob, sys, json
 import healpy as hp
 
 pic_c = 299792458     # Speed of light in m/s
+pic_pc = 3.08567758e16  # Parsec in meters
 
 class psr(object):
     """
