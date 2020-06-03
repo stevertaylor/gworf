@@ -22,6 +22,6 @@ Follow the examples in the [demo](https://github.com/stevertaylor/gworf/blob/mas
 
 ## Citation
 
-If you use this package for your research, please cite the following paper: 
+If you use this package for your research, or reuse/copy any of the code, please cite the following paper: 
 
 
