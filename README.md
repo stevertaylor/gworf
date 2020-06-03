@@ -9,4 +9,10 @@ Welcome! This lightweight package is designed to allow you to rapidly compute th
 
 ## Installation
 
+You have a few options.
+
+* Click on the binder button above to be directed to a self-contained binder image of this repository.
+* Use the `yaml` file in this repo to install a conda environment: `conda env create -f environment.yml`
+* Use pip: `pip install git+https://github.com/stevertaylor/gworf`
+
 
