@@ -15,4 +15,8 @@ You have a few options.
 * Use the `yaml` file in this repo to install a conda environment: `conda env create -f environment.yml`
 * Use pip: `pip install git+https://github.com/stevertaylor/gworf`
 
+## Usage
+
+Follow the examples in the [demo](https://github.com/stevertaylor/gworf/blob/master/demo/demo.ipynb) notebook.
+
 
