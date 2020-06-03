@@ -1,7 +1,7 @@
 # gworf
 **Gravitational Wave Overlap Reduction Functions**
 
--- *"Today is a good day to...compute the inter-detector correlation signatures induced by gravitational-wave signals"*
+*"Today is a good day to...compute the inter-detector correlation signatures induced by gravitational-wave signals"*
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/stevertaylor/gworf/master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -19,5 +19,9 @@ You have a few options.
 ## Usage
 
 Follow the examples in the [demo](https://github.com/stevertaylor/gworf/blob/master/demo/demo.ipynb) notebook.
+
+## Citation
+
+If you use this package for your research, please cite the following paper: 
 
 
